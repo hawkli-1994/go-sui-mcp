@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"net/http"
+	// "log"
+	// "net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/krli/go-sui-mcp/internal/config"
-	"github.com/krli/go-sui-mcp/internal/handlers"
+	// "github.com/gin-gonic/gin"
+	// "github.com/mark3labs/mcp-go/mcp"
+    "github.com/mark3labs/mcp-go/server"
+	// "github.com/krli/go-sui-mcp/internal/config"
+	// "github.com/krli/go-sui-mcp/internal/handlers"
 	"github.com/krli/go-sui-mcp/internal/services"
 	"github.com/krli/go-sui-mcp/internal/sui"
 	"github.com/spf13/cobra"
@@ -38,34 +40,52 @@ func init() {
 
 func startServer() {
 	// Load configuration
-	cfg, err := config.Load()
-	if err != nil {
-		log.Fatalf("Failed to load configuration: %v", err)
-	}
+	// cfg, err := config.Load()
+	// if err != nil {
+	// 	log.Fatalf("Failed to load configuration: %v", err)
+	// }
 
 	// Create a new Sui client
 	suiClient := sui.NewClient()
 
+
 	// Create service layer
 	suiService := services.NewSuiService(suiClient)
+	suiTools := services.NewSuiTools()
+	s := server.NewMCPServer(
+        "SUI MCP",
+        "1.0.0",
+    )
+	s.AddTool(suiTools.GetFormattedVersion(), suiService.GetFormattedVersion)
+	s.AddTool(suiTools.GetBalanceSummary(), suiService.GetBalanceSummary)
+	s.AddTool(suiTools.GetObjectsSummary(), suiService.GetObjectsSummary)
+	s.AddTool(suiTools.ProcessTransaction(), suiService.ProcessTransaction)
+	s.AddTool(suiTools.TransferTokens(), suiService.TransferTokens)
+	
+	// fmt.Println("Starting server...")
 
-	// Initialize the Gin router
-	router := gin.Default()
+    if err := server.ServeStdio(s); err != nil {
 
-	// Register routes
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "ok",
-		})
-	})
+        fmt.Printf("Server error: %v\n", err)
+    }
 
-	// Register Sui client API handlers
-	handlers.RegisterSuiHandlers(router, suiClient, suiService)
+	// // Initialize the Gin router
+	// router := gin.Default()
 
-	// Start the server
-	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-	log.Printf("Starting server on %s", addr)
-	if err := router.Run(addr); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
+	// // Register routes
+	// router.GET("/health", func(c *gin.Context) {
+	// 	c.JSON(http.StatusOK, gin.H{
+	// 		"status": "ok",
+	// 	})
+	// })
+
+	// // Register Sui client API handlers
+	// handlers.RegisterSuiHandlers(router, suiClient, suiService)
+
+	// // Start the server
+	// addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
+	// log.Printf("Starting server on %s", addr)
+	// if err := router.Run(addr); err != nil {
+	// 	log.Fatalf("Failed to start server: %v", err)
+	// }
 }
