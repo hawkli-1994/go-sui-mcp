@@ -1,8 +1,6 @@
 package services
 
 import (
-	"encoding/json"
-	"fmt"
 	"strings"
 
 	"context"
@@ -54,27 +52,7 @@ func (s *SuiService) GetBalanceSummary(ctx context.Context, request mcp.CallTool
 		return nil, err
 	}
 
-	// Try to parse the output as JSON
-	var result map[string]interface{}
-	if err := json.Unmarshal([]byte(output), &result); err != nil {
-		return nil, fmt.Errorf("failed to parse balance output: %w", err)
-	}
-
-	// Extract coin objects
-	coinObjects, ok := result["result"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format, missing result")
-	}
-
-	// Create a summary
-	summary := &BalanceSummary{
-		Address:     address,
-		CoinObjects: []any{coinObjects},
-	}
-
-	// Additional processing could be done here
-
-	return mcp.NewToolResultText(fmt.Sprintf("%v", summary)), nil
+	return mcp.NewToolResultText(output), nil
 }
 
 // GetObjectsSummary gets a summary of objects owned by an address
@@ -88,13 +66,7 @@ func (s *SuiService) GetObjectsSummary(ctx context.Context, request mcp.CallTool
 		return nil, err
 	}
 
-	// Try to parse the output as JSON
-	var result interface{}
-	if err := json.Unmarshal([]byte(output), &result); err != nil {
-		return nil, fmt.Errorf("failed to parse objects output: %w", err)
-	}
-
-	return mcp.NewToolResultText(fmt.Sprintf("%v", result)), nil
+	return mcp.NewToolResultText(output), nil
 }
 
 // ProcessTransaction processes a transaction and returns readable information
@@ -108,13 +80,7 @@ func (s *SuiService) ProcessTransaction(ctx context.Context, request mcp.CallToo
 		return nil, err
 	}
 
-	// Try to parse the output as JSON
-	var result interface{}
-	if err := json.Unmarshal([]byte(output), &result); err != nil {
-		return nil, fmt.Errorf("failed to parse transaction output: %w", err)
-	}
-
-	return mcp.NewToolResultText(fmt.Sprintf("%v", result)), nil
+	return mcp.NewToolResultText(output), nil
 }
 
 // TransferTokens transfers tokens and returns the transaction result
@@ -135,11 +101,6 @@ func (s *SuiService) TransferTokens(ctx context.Context, request mcp.CallToolReq
 	if err != nil {
 		return nil, err
 	}
-	// Try to parse the output as JSON
-	var result interface{}
-	if err := json.Unmarshal([]byte(output), &result); err != nil {
-		return nil, fmt.Errorf("failed to parse transaction output: %w", err)
-	}
 
-	return mcp.NewToolResultText(fmt.Sprintf("%v", result)), nil
+	return mcp.NewToolResultText(output), nil
 }

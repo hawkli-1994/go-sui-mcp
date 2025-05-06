@@ -1,17 +1,11 @@
 package cmd
 
 import (
-	"fmt"
-	// "log"
-	// "net/http"
+	"log"
 
-	// "github.com/gin-gonic/gin"
-	// "github.com/mark3labs/mcp-go/mcp"
-    "github.com/mark3labs/mcp-go/server"
-	// "github.com/krli/go-sui-mcp/internal/config"
-	// "github.com/krli/go-sui-mcp/internal/handlers"
 	"github.com/krli/go-sui-mcp/internal/services"
 	"github.com/krli/go-sui-mcp/internal/sui"
+	"github.com/mark3labs/mcp-go/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -48,26 +42,28 @@ func startServer() {
 	// Create a new Sui client
 	suiClient := sui.NewClient()
 
-
 	// Create service layer
 	suiService := services.NewSuiService(suiClient)
 	suiTools := services.NewSuiTools()
 	s := server.NewMCPServer(
-        "SUI MCP",
-        "1.0.0",
-    )
+		"SUI MCP",
+		"1.0.0",
+	)
 	s.AddTool(suiTools.GetFormattedVersion(), suiService.GetFormattedVersion)
 	s.AddTool(suiTools.GetBalanceSummary(), suiService.GetBalanceSummary)
 	s.AddTool(suiTools.GetObjectsSummary(), suiService.GetObjectsSummary)
 	s.AddTool(suiTools.ProcessTransaction(), suiService.ProcessTransaction)
 	s.AddTool(suiTools.TransferTokens(), suiService.TransferTokens)
-	
+
 	// fmt.Println("Starting server...")
+	sseServer := server.NewSSEServer(s, server.WithBaseURL("http://localhost:8080"))
+	if err := sseServer.Start(":8080"); err != nil {
+		log.Fatalf("Server error: %v", err)
+	}
+	// if err := server.ServeStdio(s); err != nil {
 
-    if err := server.ServeStdio(s); err != nil {
-
-        fmt.Printf("Server error: %v\n", err)
-    }
+	//     fmt.Printf("Server error: %v\n", err)
+	// }
 
 	// // Initialize the Gin router
 	// router := gin.Default()

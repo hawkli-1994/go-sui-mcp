@@ -54,7 +54,7 @@ func (c *Client) GetVersion() (string, error) {
 
 // GetBalance gets the balance for a specific address
 func (c *Client) GetBalance(address string) (string, error) {
-	args := []string{"client", "gas", "--address", address}
+	args := []string{"client", "balance", address}
 	return c.ExecuteCommand(args...)
 }
 
