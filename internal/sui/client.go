@@ -76,6 +76,12 @@ func (c *Client) GetObjects(address string) (string, error) {
 	if address != "" {
 		args = append(args, address)
 	}
+	args = append(args, "--json")
+	return c.ExecuteCommand(args...)
+}
+
+func (c *Client) GetObject(objectID string) (string, error) {
+	args := []string{"client", "object", objectID, "--json"}
 	return c.ExecuteCommand(args...)
 }
 
@@ -97,12 +103,15 @@ func (c *Client) GetTransaction(txID string) (string, error) {
 	return c.ExecuteCommand(args...)
 }
 
-// TransferSUI transfers SUI tokens to a recipient
-func (c *Client) TransferSUI(recipient string, amount uint64, gasOption string) (string, error) {
-	args := []string{"client", "transfer-sui", "--to", recipient, "--amount", fmt.Sprintf("%d", amount)}
+// PaySUI transfers SUI tokens to a recipient
+func (c *Client) PaySUI(recipients string, inputCoins string, amounts uint64, gasBudget string) (string, error) {
+	args := []string{"client", "pay-sui",
+		"--recipients", recipients,
+		"--input-coins", inputCoins,
+		"--amounts", fmt.Sprintf("%d", amounts)}
 
-	if gasOption != "" {
-		args = append(args, "--gas-budget", gasOption)
+	if gasBudget != "" {
+		args = append(args, "--gas-budget", gasBudget)
 	}
 
 	return c.ExecuteCommand(args...)

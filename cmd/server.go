@@ -7,6 +7,7 @@ import (
 	"github.com/krli/go-sui-mcp/internal/services"
 	"github.com/krli/go-sui-mcp/internal/sui"
 	"github.com/mark3labs/mcp-go/server"
+
 	// "github.com/mark3labs/mcp-go/mcp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -42,10 +43,9 @@ func registerHandlers(s *server.MCPServer, suiTools *services.SuiTools, suiServi
 	s.AddTool(suiTools.GetSuiPath(), suiService.GetSuiPath)
 	s.AddTool(suiTools.GetBalanceSummary(), suiService.GetBalanceSummary)
 	s.AddTool(suiTools.GetObjectsSummary(), suiService.GetObjectsSummary)
+	s.AddTool(suiTools.GetObject(), suiService.GetObject)
 	s.AddTool(suiTools.ProcessTransaction(), suiService.ProcessTransaction)
-	s.AddTool(suiTools.TransferTokens(), suiService.TransferTokens)
-
-
+	s.AddTool(suiTools.PaySUI(), suiService.PaySUI)
 
 }
 
