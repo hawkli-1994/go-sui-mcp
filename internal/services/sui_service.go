@@ -33,6 +33,14 @@ func (s *SuiService) GetFormattedVersion(ctx context.Context, request mcp.CallTo
 	return mcp.NewToolResultText(strings.TrimSpace(version)), nil
 }
 
+func (s *SuiService) GetSuiPath(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	path, err := s.client.GetSuiPath()
+	if err != nil {
+		return nil, err
+	}
+	return mcp.NewToolResultText(path), nil
+}
+
 // GetBalanceSummary returns a summary of the balance for an address
 type BalanceSummary struct {
 	Address     string `json:"address"`
@@ -43,10 +51,7 @@ type BalanceSummary struct {
 
 // GetBalanceSummary returns a structured summary of the balance for an address
 func (s *SuiService) GetBalanceSummary(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	address, ok := request.Params.Arguments["address"].(string)
-	if !ok {
-		return nil, errors.New("address must be a string")
-	}
+	address, _ := request.Params.Arguments["address"].(string)
 	output, err := s.client.GetBalance(address)
 	if err != nil {
 		return nil, err
@@ -57,10 +62,8 @@ func (s *SuiService) GetBalanceSummary(ctx context.Context, request mcp.CallTool
 
 // GetObjectsSummary gets a summary of objects owned by an address
 func (s *SuiService) GetObjectsSummary(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	address, ok := request.Params.Arguments["address"].(string)
-	if !ok {
-		return nil, errors.New("address must be a string")
-	}
+	address, _ := request.Params.Arguments["address"].(string)
+
 	output, err := s.client.GetObjects(address)
 	if err != nil {
 		return nil, err

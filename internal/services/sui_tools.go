@@ -19,12 +19,18 @@ func (s *SuiTools) GetFormattedVersion() mcp.Tool {
 	)
 }
 
+func (s *SuiTools) GetSuiPath() mcp.Tool {
+	return mcp.NewTool(
+		"sui-path",
+		mcp.WithDescription("Get the path of the local sui binary"),
+	)
+}
+
 func (s *SuiTools) GetBalanceSummary() mcp.Tool {
 	return mcp.NewTool(
 		"sui-balance-summary",
 		mcp.WithString("address",
-			mcp.Required(),
-			mcp.Description("Address to get the balance summary of"),
+			mcp.Description("Address to get the balance summary of, if not provided, the current address will be used"),
 		),
 		mcp.WithDescription("Get the balance summary of the Sui client"),
 	)
@@ -34,8 +40,7 @@ func (s *SuiTools) GetObjectsSummary() mcp.Tool {
 	return mcp.NewTool(
 		"sui-objects-summary",
 		mcp.WithString("address",
-			mcp.Required(),
-			mcp.Description("Address to get the objects summary of"),
+			mcp.Description("Address to get the objects summary of, if not provided, the current address will be used"),
 		),
 		mcp.WithDescription("Get the objects summary of the Sui client"),
 	)

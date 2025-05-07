@@ -52,15 +52,30 @@ func (c *Client) GetVersion() (string, error) {
 	return strings.TrimSpace(output), nil
 }
 
+func (c *Client) GetSuiPath() (string, error) {
+
+	output, err := exec.Command("which", "sui").Output()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(output)), nil
+}
+
 // GetBalance gets the balance for a specific address
 func (c *Client) GetBalance(address string) (string, error) {
-	args := []string{"client", "balance", address}
+	args := []string{"client", "balance"}
+	if address != "" {
+		args = append(args, address)
+	}
 	return c.ExecuteCommand(args...)
 }
 
 // GetObjects gets objects owned by an address
 func (c *Client) GetObjects(address string) (string, error) {
-	args := []string{"client", "objects", "--address", address}
+	args := []string{"client", "objects"}
+	if address != "" {
+		args = append(args, address)
+	}
 	return c.ExecuteCommand(args...)
 }
 
@@ -78,7 +93,7 @@ func (c *Client) GetNetwork() (string, error) {
 
 // GetTransaction retrieves information about a specific transaction
 func (c *Client) GetTransaction(txID string) (string, error) {
-	args := []string{"client", "transaction", txID}
+	args := []string{"client", "tx-block", txID}
 	return c.ExecuteCommand(args...)
 }
 
