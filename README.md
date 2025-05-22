@@ -1,4 +1,5 @@
 # Go Sui MCP (Management Control Plane)
+![Uploading 0e0d353d18274ae38d5e695991b99fba_1.png…]()
 
 A Go-based management control plane server for Sui blockchain, providing MCP (Management Control Plane) tools to interact with local Sui client commands. This project integrates with Cursor IDE for enhanced development experience.
 
