@@ -39,6 +39,7 @@ func init() {
 }
 
 func registerHandlers(s *server.MCPServer, suiTools *services.SuiTools, suiService *services.SuiService) {
+	// Original tools
 	s.AddTool(suiTools.GetFormattedVersion(), suiService.GetFormattedVersion)
 	s.AddTool(suiTools.GetSuiPath(), suiService.GetSuiPath)
 	s.AddTool(suiTools.GetBalanceSummary(), suiService.GetBalanceSummary)
@@ -47,6 +48,39 @@ func registerHandlers(s *server.MCPServer, suiTools *services.SuiTools, suiServi
 	s.AddTool(suiTools.ProcessTransaction(), suiService.ProcessTransaction)
 	s.AddTool(suiTools.PaySUI(), suiService.PaySUI)
 
+	// Address and Environment Management
+	s.AddTool(suiTools.GetActiveAddress(), suiService.GetActiveAddress)
+	s.AddTool(suiTools.GetAddresses(), suiService.GetAddresses)
+	s.AddTool(suiTools.GetActiveEnv(), suiService.GetActiveEnv)
+	s.AddTool(suiTools.GetEnvs(), suiService.GetEnvs)
+	s.AddTool(suiTools.GetChainIdentifier(), suiService.GetChainIdentifier)
+
+	// Gas Management
+	s.AddTool(suiTools.GetGas(), suiService.GetGas)
+	s.AddTool(suiTools.RequestFromFaucet(), suiService.RequestFromFaucet)
+
+	// Transaction Operations
+	s.AddTool(suiTools.Transfer(), suiService.Transfer)
+	s.AddTool(suiTools.TransferSUI(), suiService.TransferSUI)
+	s.AddTool(suiTools.SplitCoin(), suiService.SplitCoin)
+	s.AddTool(suiTools.MergeCoin(), suiService.MergeCoin)
+	s.AddTool(suiTools.Pay(), suiService.Pay)
+	s.AddTool(suiTools.PayAllSUI(), suiService.PayAllSUI)
+
+	// Contract Interaction
+	s.AddTool(suiTools.Call(), suiService.Call)
+	s.AddTool(suiTools.Publish(), suiService.Publish)
+	s.AddTool(suiTools.GetDynamicField(), suiService.GetDynamicField)
+
+	// Move Development
+	s.AddTool(suiTools.MoveBuild(), suiService.MoveBuild)
+	s.AddTool(suiTools.MoveTest(), suiService.MoveTest)
+	s.AddTool(suiTools.MoveNew(), suiService.MoveNew)
+
+	// Keytool Management
+	s.AddTool(suiTools.KeytoolList(), suiService.KeytoolList)
+	s.AddTool(suiTools.KeytoolGenerate(), suiService.KeytoolGenerate)
+	s.AddTool(suiTools.KeytoolExport(), suiService.KeytoolExport)
 }
 
 func startServer(port int, sse bool) {

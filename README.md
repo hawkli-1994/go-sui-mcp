@@ -92,20 +92,54 @@ To integrate with Cursor IDE, create a `.cursor/mcp.json` file in your project r
 
 ## Available MCP Tools
 
-The following MCP tools are available:
+The server provides **28 MCP tools** covering comprehensive Sui blockchain operations:
 
-### Version and Path
+### Version and Path (2 tools)
 - `sui-formatted-version`: Get the formatted version of the Sui client
 - `sui-path`: Get the path of the local sui binary
 
-### Balance and Objects
+### Address and Environment Management (5 tools)
+- `sui-active-address`: Get the current active address
+- `sui-addresses`: List all addresses managed by the client
+- `sui-active-env`: Get current active environment (devnet/testnet/mainnet)
+- `sui-envs`: List all configured network environments
+- `sui-chain-identifier`: Query chain identifier from RPC endpoint
+
+### Balance and Objects (3 tools)
 - `sui-balance-summary`: Get the balance summary of an address
 - `sui-objects-summary`: Get the objects summary of an address
 - `sui-object`: Get details of a specific object
 
-### Transactions
+### Gas Management (2 tools)
+- `sui-gas`: Get all gas objects owned by an address
+- `sui-faucet`: Request test coins from faucet (devnet/testnet only)
+
+### Transaction Operations (7 tools)
+- `sui-transfer`: Transfer an object to another address
+- `sui-transfer-sui`: Simplified SUI transfer (with optional amount)
+- `sui-pay-sui`: Pay SUI to recipients
+- `sui-pay`: Pay coins to multiple recipients with specified amounts
+- `sui-pay-all-sui`: Pay all residual SUI after deducting gas
+- `sui-split-coin`: Split a coin object into multiple coins
+- `sui-merge-coin`: Merge two coin objects into one
+
+### Transaction Info (1 tool)
 - `sui-process-transaction`: Process and get details of a transaction
-- `sui-pay-sui`: Transfer SUI tokens to a recipient
+
+### Contract Interaction (3 tools)
+- `sui-call`: Call a Move function on the blockchain
+- `sui-publish`: Publish Move modules to the blockchain
+- `sui-dynamic-field`: Query a dynamic field by parent object ID
+
+### Move Development (3 tools)
+- `sui-move-build`: Build a Move package
+- `sui-move-test`: Run Move unit tests
+- `sui-move-new`: Create a new Move package
+
+### Keytool Management (3 tools)
+- `sui-keytool-list`: List all keys in the keystore
+- `sui-keytool-generate`: Generate a new keypair (ed25519/secp256k1/secp256r1)
+- `sui-keytool-export`: Export private key in Bech32 format
 
 ### Example Tool Usage (in Cursor)
 
