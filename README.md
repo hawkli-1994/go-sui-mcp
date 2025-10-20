@@ -6,26 +6,35 @@ A Go-based management control plane server for Sui blockchain, providing MCP (Ma
 
 ## Features
 
-- MCP tools for Sui client operations
-- Support for both stdio and SSE (Server-Sent Events) modes
-- Integration with Cursor IDE
-- Configuration via config file, environment variables, or command-line flags
+- **28 Comprehensive MCP Tools**: Complete coverage of Sui blockchain operations
+  - Address and environment management
+  - Balance and gas operations
+  - Transaction handling (transfer, split, merge coins)
+  - Smart contract interaction (call, publish)
+  - Move development workflow (build, test, new package)
+  - Keystore management
+- **Dual Transport Modes**: stdio (default) and SSE (Server-Sent Events)
+- **IDE Integration**: Works with Cursor, Claude Code, and any MCP-compatible client
+- **Flexible Configuration**: Support for config files, environment variables, and CLI flags
+- **Zero Dependencies**: Only requires Sui CLI to be installed locally
 
 ## Prerequisites
 
-- Go 1.20 or higher
+- Go 1.23 or higher
 - Sui client installed and available in PATH
-- Cursor IDE (for development)
+- Cursor IDE or any MCP-compatible client (for using the tools)
 
 ## Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/krli/go-sui-mcp.git
+git clone https://github.com/hawkli-1994/go-sui-mcp.git
 cd go-sui-mcp
 
 # Build the application
-go build -o go-sui-mcp
+make build
+# or
+go build -o go-sui-mcp main.go
 ```
 
 ## Configuration
@@ -141,33 +150,112 @@ The server provides **28 MCP tools** covering comprehensive Sui blockchain opera
 - `sui-keytool-generate`: Generate a new keypair (ed25519/secp256k1/secp256r1)
 - `sui-keytool-export`: Export private key in Bech32 format
 
-### Example Tool Usage (in Cursor)
+## Example Tool Usage
 
-Transfer SUI tokens:
+### Get current active address
 ```typescript
-await mcp.invoke("sui-pay-sui", {
-  recipient: "0x...",
-  amounts: 1000000000, // 1 SUI
-  "gas-budget": "2000000",
-  "input-coins": "0x..."
-});
+await mcp.invoke("sui-active-address");
 ```
 
-Get balance summary:
+### Get balance summary
 ```typescript
 await mcp.invoke("sui-balance-summary", {
   address: "0x..." // optional, uses current address if not provided
 });
 ```
 
-## Development
+### Transfer SUI tokens
+```typescript
+await mcp.invoke("sui-pay-sui", {
+  recipient: "0x...",
+  amounts: 1000000000, // 1 SUI in MIST
+  "gas-budget": "2000000",
+  "input-coins": "0x..."
+});
+```
 
-The project uses the following key components:
+### Request test tokens from faucet (devnet/testnet)
+```typescript
+await mcp.invoke("sui-faucet");
+```
 
-- `internal/sui`: Core Sui client implementation
-- `internal/services`: MCP tools and service implementations
-- `cmd`: Command-line interface implementation
+### Call a Move function
+```typescript
+await mcp.invoke("sui-call", {
+  package: "0x...",
+  module: "module_name",
+  function: "function_name",
+  "type-args": ["0x2::sui::SUI"],
+  args: ["arg1", "arg2"],
+  "gas-budget": "10000000"
+});
+```
+
+### Build a Move package
+```typescript
+await mcp.invoke("sui-move-build", {
+  "package-path": "./my_move_package"
+});
+```
+
+### Run Move tests
+```typescript
+await mcp.invoke("sui-move-test", {
+  "package-path": "./my_move_package",
+  filter: "test_name" // optional
+});
+```
+
+## Project Structure
+
+The project follows a clean three-layer architecture:
+
+```
+go-sui-mcp/
+├── cmd/                      # CLI commands
+│   ├── root.go              # Root command and config initialization
+│   └── server.go            # MCP server command and tool registration
+├── internal/
+│   ├── sui/                 # Sui client layer
+│   │   └── client.go        # Wraps Sui CLI commands
+│   ├── services/            # Service layer
+│   │   ├── sui_service.go   # MCP request handlers
+│   │   └── sui_tools.go     # MCP tool definitions
+│   └── config/              # Configuration management
+│       └── config.go
+├── main.go                  # Application entry point
+├── Makefile                 # Build automation
+├── go.mod                   # Go module dependencies
+└── CLAUDE.md               # Claude Code integration guide
+```
+
+### Key Components
+
+- **Client Layer** (`internal/sui/client.go`): Wraps Sui CLI commands and executes them
+- **Service Layer** (`internal/services/sui_service.go`): Implements MCP handlers with parameter validation
+- **Tools Layer** (`internal/services/sui_tools.go`): Defines MCP tool schemas and descriptions
+- **Command Layer** (`cmd/`): Cobra-based CLI with server initialization and tool registration
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Development Setup
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests (when available): `go test ./...`
+5. Build and test: `make build && ./go-sui-mcp server`
+6. Commit your changes (`git commit -m 'Add some amazing feature'`)
+7. Push to the branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
 
 ## License
 
 See [LICENSE](LICENSE) file.
+
+## Acknowledgments
+
+- Built with [mcp-go](https://github.com/mark3labs/mcp-go) - Go implementation of Model Context Protocol
+- Powered by [Sui](https://sui.io/) blockchain
