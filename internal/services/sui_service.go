@@ -102,26 +102,51 @@ func (s *SuiService) ProcessTransaction(ctx context.Context, request mcp.CallToo
 
 // PaySUI transfers tokens and returns the transaction result
 func (s *SuiService) PaySUI(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	recipient, ok := request.Params.Arguments["recipient"].(string)
+	// Parse recipients
+	recipientsInterface, ok := request.Params.Arguments["recipients"].([]interface{})
 	if !ok {
-		return nil, errors.New("recipient must be a string")
+		return nil, errors.New("recipients must be an array")
 	}
-	amountFloat, ok := request.Params.Arguments["amounts"].(float64)
-	if !ok {
-		return nil, errors.New("amounts must be a number")
+	recipients := make([]string, len(recipientsInterface))
+	for i, v := range recipientsInterface {
+		if str, ok := v.(string); ok {
+			recipients[i] = str
+		} else {
+			return nil, errors.New("recipients must contain strings")
+		}
 	}
-	amounts := uint64(amountFloat)
 
-	inputCoins, ok := request.Params.Arguments["input-coins"].(string)
+	// Parse amounts
+	amountsInterface, ok := request.Params.Arguments["amounts"].([]interface{})
 	if !ok {
-		return nil, errors.New("inputCoins must be a string")
+		return nil, errors.New("amounts must be an array")
+	}
+	amounts := make([]uint64, len(amountsInterface))
+	for i, v := range amountsInterface {
+		if num, ok := v.(float64); ok {
+			amounts[i] = uint64(num)
+		} else {
+			return nil, errors.New("amounts must contain numbers")
+		}
 	}
 
-	gasBudget, ok := request.Params.Arguments["gas-budget"].(string)
+	// Parse input-coins
+	inputCoinsInterface, ok := request.Params.Arguments["input-coins"].([]interface{})
 	if !ok {
-		return nil, errors.New("gasBudget must be a string")
+		return nil, errors.New("input-coins must be an array")
 	}
-	output, err := s.client.PaySUI(recipient, inputCoins, amounts, gasBudget)
+	inputCoins := make([]string, len(inputCoinsInterface))
+	for i, v := range inputCoinsInterface {
+		if str, ok := v.(string); ok {
+			inputCoins[i] = str
+		} else {
+			return nil, errors.New("input-coins must contain strings")
+		}
+	}
+
+	gasBudget, _ := request.Params.Arguments["gas-budget"].(string)
+
+	output, err := s.client.PaySUI(recipients, inputCoins, amounts, gasBudget)
 	if err != nil {
 		return nil, err
 	}

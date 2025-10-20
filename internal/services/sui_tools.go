@@ -83,24 +83,26 @@ func (s *SuiTools) PaySUI() mcp.Tool {
 	转账已经完成，收款方已经收到了 1 SUI。新创建的 coin object ID 是：0x8bf92f132a6a9bd4ab32b083bcc0d54fc81bcd6fd07c0742c87e5c56e354cb04。`
 	return mcp.NewTool(
 		"sui-pay-sui",
-		mcp.WithString("recipient",
+		mcp.WithArray("recipients",
 			mcp.Required(),
-			mcp.Description("Recipient address"),
+			mcp.Description("Array of recipient addresses"),
+			mcp.Items(map[string]interface{}{"type": "string"}),
 		),
-		mcp.WithNumber("amounts",
+		mcp.WithArray("amounts",
 			mcp.Required(),
-			mcp.Description("Amounts to transfer"),
+			mcp.Description("Array of amounts to transfer (in MIST), must match length of recipients"),
+			mcp.Items(map[string]interface{}{"type": "number"}),
+		),
+		mcp.WithArray("input-coins",
+			mcp.Required(),
+			mcp.Description("Array of input SUI coin object IDs, need first to get the object of the SUI coin"),
+			mcp.Items(map[string]interface{}{"type": "string"}),
 		),
 		mcp.WithString("gas-budget",
-			mcp.Required(),
 			mcp.Description("Gas budget"),
 		),
-		mcp.WithString("input-coins",
-			mcp.Required(),
-			mcp.Description("Input coins, need first to get the object of the SUI coin"),
-		),
 
-		mcp.WithDescription("Pay SUI, 首先, 第一步先检查整体余额是否足够, 然后调用objects summary 获取所有coin object, 然后调用object 找到余额足够的coin object, 然后调用pay sui 进行支付, 然后按照模板<"+template+">返回结果"),
+		mcp.WithDescription("Pay SUI to multiple recipients, 首先, 第一步先检查整体余额是否足够, 然后调用objects summary 获取所有coin object, 然后调用object 找到余额足够的coin object, 然后调用pay sui 进行支付, 然后按照模板<"+template+">返回结果"),
 	)
 }
 

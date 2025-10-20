@@ -103,12 +103,24 @@ func (c *Client) GetTransaction(txID string) (string, error) {
 	return c.ExecuteCommand(args...)
 }
 
-// PaySUI transfers SUI tokens to a recipient
-func (c *Client) PaySUI(recipients string, inputCoins string, amounts uint64, gasBudget string) (string, error) {
-	args := []string{"client", "pay-sui",
-		"--recipients", recipients,
-		"--input-coins", inputCoins,
-		"--amounts", fmt.Sprintf("%d", amounts)}
+// PaySUI transfers SUI tokens to recipients (supports multiple recipients)
+func (c *Client) PaySUI(recipients []string, inputCoins []string, amounts []uint64, gasBudget string) (string, error) {
+	args := []string{"client", "pay-sui"}
+
+	// Add multiple --input-coins flags
+	for _, coin := range inputCoins {
+		args = append(args, "--input-coins", coin)
+	}
+
+	// Add multiple --recipients flags
+	for _, recipient := range recipients {
+		args = append(args, "--recipients", recipient)
+	}
+
+	// Add multiple --amounts flags
+	for _, amount := range amounts {
+		args = append(args, "--amounts", fmt.Sprintf("%d", amount))
+	}
 
 	if gasBudget != "" {
 		args = append(args, "--gas-budget", gasBudget)
@@ -235,10 +247,22 @@ func (c *Client) MergeCoin(primaryCoin string, coinToMerge string, gasBudget str
 
 // Pay pays coins to recipients following specified amounts
 func (c *Client) Pay(inputCoins []string, recipients []string, amounts []uint64, gasBudget string) (string, error) {
-	args := []string{"client", "pay",
-		"--input-coins", strings.Join(inputCoins, ","),
-		"--recipients", strings.Join(recipients, ","),
-		"--amounts", strings.Join(uint64SliceToStrings(amounts), ",")}
+	args := []string{"client", "pay"}
+
+	// Add multiple --input-coins flags
+	for _, coin := range inputCoins {
+		args = append(args, "--input-coins", coin)
+	}
+
+	// Add multiple --recipients flags
+	for _, recipient := range recipients {
+		args = append(args, "--recipients", recipient)
+	}
+
+	// Add multiple --amounts flags
+	for _, amount := range amounts {
+		args = append(args, "--amounts", fmt.Sprintf("%d", amount))
+	}
 
 	if gasBudget != "" {
 		args = append(args, "--gas-budget", gasBudget)
@@ -249,9 +273,14 @@ func (c *Client) Pay(inputCoins []string, recipients []string, amounts []uint64,
 
 // PayAllSUI pays all residual SUI coins to the recipient
 func (c *Client) PayAllSUI(inputCoins []string, recipient string, gasBudget string) (string, error) {
-	args := []string{"client", "pay-all-sui",
-		"--input-coins", strings.Join(inputCoins, ","),
-		"--recipient", recipient}
+	args := []string{"client", "pay-all-sui"}
+
+	// Add multiple --input-coins flags
+	for _, coin := range inputCoins {
+		args = append(args, "--input-coins", coin)
+	}
+
+	args = append(args, "--recipient", recipient)
 
 	if gasBudget != "" {
 		args = append(args, "--gas-budget", gasBudget)
@@ -269,13 +298,14 @@ func (c *Client) Call(packageID string, module string, function string, typeArgs
 		"--module", module,
 		"--function", function}
 
-	if len(typeArgs) > 0 {
-		cmdArgs = append(cmdArgs, "--type-args", strings.Join(typeArgs, ","))
+	// Add multiple --type-args flags
+	for _, typeArg := range typeArgs {
+		cmdArgs = append(cmdArgs, "--type-args", typeArg)
 	}
 
-	if len(args) > 0 {
-		cmdArgs = append(cmdArgs, "--args")
-		cmdArgs = append(cmdArgs, args...)
+	// Add multiple --args flags
+	for _, arg := range args {
+		cmdArgs = append(cmdArgs, "--args", arg)
 	}
 
 	if gasBudget != "" {
