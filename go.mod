@@ -2,7 +2,7 @@ module github.com/krli/go-sui-mcp
 
 go 1.23
 
-toolchain go1.24.2
+toolchain go1.25.5
 
 require (
 	github.com/mark3labs/mcp-go v0.25.0
